@@ -1,5 +1,4 @@
 % cnn 3
-% cnn-2
 % CNN
 
 clear;
