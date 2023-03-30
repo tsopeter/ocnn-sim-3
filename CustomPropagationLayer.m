@@ -94,12 +94,10 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
 
             % Define layer predict function here.
             % normalize and apply layer weights
-            R = gpuArray(cast(X, 'like', 1));
-            Z = gpuArray(zeros(size(R), 'double'));
-            for i=1:size(R, 4)
-                Z(:,:,1,i)=abs(ifft2(fft2(R(:,:,1,i)) .* layer.w));
+            Z = zeros(size(X), 'like', X);
+            for i=1:size(X, 4)
+                Z(:,:,1,i)=abs(ifft(ifft(ifftshift(fft(fft(real(fftshift(X(:,:,1,i)))).' ).' .* layer.w )).').');
             end
-            Z = cast(Z, 'like', X);
         end
 
         % function dLdX = backward(layer, X, Z, dLdZ, dLdSout)
