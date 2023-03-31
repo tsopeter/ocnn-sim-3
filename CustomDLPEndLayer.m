@@ -1,4 +1,4 @@
-classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable 
+classdef CustomDLPEndLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable 
         % & nnet.layer.Formattable ... % (Optional) 
         % & nnet.layer.Acceleratable % (Optional)
 
@@ -6,15 +6,8 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
         % (Optional) Layer properties.
 
         % Declare layer properties here.
-        w
-        wc
-
         Nx
         Ny
-        nx
-        ny
-        d
-        wv
     end
 
     properties (Learnable)
@@ -37,40 +30,16 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
     end
 
     methods
-        function layer = CustomPropagationLayer(Name, Nx, Ny, nx, ny, d, wv)
+        function layer = CustomDLPEndLayer(Name, Nx, Ny)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
 
             % Define layer constructor function here.
-            layer.Name = Name;
-            layer.NumInputs = 1;
+            layer.Name       = Name;
+            layer.NumInputs  = 1;
             layer.NumOutputs = 1;
-
-            layer.Nx = Nx;
-            layer.Ny = Ny;
-            layer.nx = nx;
-            layer.ny = ny;
-            layer.d  = d;
-            layer.wv = wv;
-            layer = layer.compute_w();
-        end
-
-        function layer = compute_w(layer)
-            dx = layer.nx/layer.Nx;
-            dy = layer.ny/layer.Ny;
-            
-            rangex = 1/dx;  % number of frequencies available
-            rangey = 1/dy;
-
-            posx = linspace(-rangex/2, rangex/2, layer.Nx);
-            posy = linspace(-rangey/2, rangey/2, layer.Ny);
-
-            [fxx, fyy] = meshgrid(posy, posx);
-    
-            kz = 2 * pi * sqrt((1/layer.wv)^2 -(fxx.^2)-(fyy.^2));
-
-            layer.w  = exp(1i * kz * layer.d);
-            layer.wc = fft2(ifft2(layer.w).');
+            layer.Nx         = Nx;
+            layer.Ny         = Ny;
         end
         
         function Z = predict(layer, X)
@@ -94,10 +63,9 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
 
             % Define layer predict function here.
             % normalize and apply layer weights
-            Z = zeros(size(X), 'like', X);
-            for i=1:size(X, 4)
-                Z(:,:,1,i)=abs(ifft(ifft(ifftshift(fft(fft(real(fftshift(X(:,:,1,i)))).' ).' .* layer.w )).').');
-            end
+            X(X<0.5)=0;
+            X(X>=0.5)=1;
+            Z = X;
         end
 
         % function dLdX = backward(layer, X, Z, dLdZ, dLdSout)
@@ -137,11 +105,5 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
         %     %    of state parameters.
         % 
         %     % Define layer backward function here.
-        %     dLdX = zeros(size(X), 'like', X);
-        %     for i=1:size(X, 4)
-        %         Q=fft(fft(real(fftshift(dLdZ(:,:,1,i))).').') .* layer.wc;
-        %         dLdX(:,:,1,i)=real(ifft(ifft(ifftshift(Q)).').');
-        %     end
-        % end
     end
 end

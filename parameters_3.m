@@ -1,9 +1,11 @@
+%parameters_3
+
 % parameters-2
 %
 % parameters
 
-Nx     = 128;
-Ny     = 128;
+Nx     = 512;
+Ny     = 512;
 ratio  = 2;
 ix     = round(Nx/ratio);
 iy     = round(Ny/ratio);
@@ -29,15 +31,15 @@ filenameLabelsTrain = 'Images/train-labels-idx1-ubyte.gz';
 filenameImagesTest  = 'Images/t10k-images-idx3-ubyte.gz';
 filenameLabelsTest  = 'Images/t10k-labels-idx1-ubyte.gz';
 
-dataTrain = create_imagedatastore(filenameLabelsTrain, "TrainImagesPNG/");
-dataTest  = create_imagedatastore(filenameLabelsTest , "TestImagesPNG/");
+dataTrain = create_imagedatastore(filenameLabelsTrain, "DLPTrainImagesPNG/");
+dataTest  = create_imagedatastore(filenameLabelsTest , "DLPTestImagesPNG/");
 
 %dataTrain = create_xor_imagedatastore("XORLabels/train_labels.mat", "TrainImagesXOR");
 %dataTest  = create_xor_imagedatastore("XORLabels/test_labels.mat" , "TestImagesXOR");
 
 numEpochs = 32;
-miniBatchSize = 512;
-learnRate = 5e-4;
+miniBatchSize = 64;
+learnRate = 5e-5;
 
 dataTest  = partition(dataTest , 10 , 1);
 Sx = 28;
