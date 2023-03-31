@@ -1,5 +1,7 @@
 % deploy cnn_3 onto hardware
 % load a pre-trained network
+% pre-trained networks are available in
+% 'Results/' folder
 clear;
 
 frameNumberLimit = 15;
