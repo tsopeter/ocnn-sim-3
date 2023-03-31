@@ -1,32 +1,36 @@
 %
 % parameters
 
-Nx     = 128;
+Nx     = 128;             % number of emitter elements
 Ny     = 128;
-ratio  = 2;
-ix     = round(Nx/ratio);
+ratio  = 2;               % ratio for rescaling input
+ix     = round(Nx/ratio); % number of scaled emitter elements
 iy     = round(Ny/ratio);
-nx     = 1660e-6;
+nx     = 1660e-6;         % size of array
 ny     = 1660e-6;
-d1     = 15e-2;
+d1     = 15e-2;           % propagation distance
 d2     = 15e-2;
-wv     = 650e-9;
+wv     = 663e-9;          % emission wavelength
 a0     = 20;
-r1     = nx/4;
-r2     = nx/20;
-rate   = 1;
-lvalue = 1e-6;
-sx     = 2;
+r1     = nx/4;            % detector radius
+r2     = nx/20;           % detector detection radius
+rate   = 1;               % kernel update rate
+lvalue = 1e-6;            % NaN prevention #
+sx     = 2;               % tanh values
 sy     = 1;
 sc     = 0.45;
 sz     = 0.2;
-P      = 1;
-probability = 0.25;
+P      = 1;               % emission power in W
+probability = 0.25;       % dropout probability
+
+% training & testing images
 
 filenameImagesTrain = 'Images/train-images-idx3-ubyte.gz';
 filenameLabelsTrain = 'Images/train-labels-idx1-ubyte.gz';
 filenameImagesTest  = 'Images/t10k-images-idx3-ubyte.gz';
 filenameLabelsTest  = 'Images/t10k-labels-idx1-ubyte.gz';
+
+% get data for training
 
 dataTrain = create_imagedatastore(filenameLabelsTrain, "TrainImagesPNG/");
 dataTest  = create_imagedatastore(filenameLabelsTest , "TestImagesPNG/");
@@ -38,10 +42,10 @@ numEpochs = 48;
 miniBatchSize = 512;
 learnRate = 5e-4;
 
-dataTest  = partition(dataTest , 10 , 1);
-Sx = 28;
+dataTest  = partition(dataTest , 10 , 1);     % test only first partition of test data
+Sx = 28;                  % size of input images
 Sy = 28;
-C  = 1;
+C  = 1;                   % # of channels per input image
 
 dimx = Sx;
 dimy = Sy;
