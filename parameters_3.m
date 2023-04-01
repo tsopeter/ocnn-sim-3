@@ -4,9 +4,9 @@
 %
 % parameters
 
-Nx     = 512;
-Ny     = 512;
-ratio  = 2;
+Nx     = 256;
+Ny     = 256;
+ratio  = 1;
 ix     = round(Nx/ratio);
 iy     = round(Ny/ratio);
 nx     = 1660e-6;
@@ -38,12 +38,12 @@ dataTest  = create_imagedatastore(filenameLabelsTest , "DLPTestImagesPNG/");
 %dataTest  = create_xor_imagedatastore("XORLabels/test_labels.mat" , "TestImagesXOR");
 
 numEpochs = 32;
-miniBatchSize = 64;
+miniBatchSize = 128;
 learnRate = 5e-5;
 
 dataTest  = partition(dataTest , 10 , 1);
-Sx = 28;
-Sy = 28;
+Sx = Nx;
+Sy = Ny;
 C  = 1;
 
 dimx = Sx;

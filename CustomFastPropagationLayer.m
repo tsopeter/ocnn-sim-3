@@ -1,4 +1,4 @@
-classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable 
+classdef CustomFastPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable 
         % & nnet.layer.Formattable ... % (Optional) 
         % & nnet.layer.Acceleratable % (Optional)
 
@@ -37,7 +37,7 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
     end
 
     methods
-        function layer = CustomPropagationLayer(Name, Nx, Ny, nx, ny, d, wv)
+        function layer = CustomFastPropagationLayer(Name, Nx, Ny, nx, ny, d, wv)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
 
@@ -70,7 +70,7 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
             kz = 2 * pi * sqrt((1/layer.wv)^2 -(fxx.^2)-(fyy.^2));
 
             layer.w  = exp(1i * kz * layer.d);
-            layer.wc = layer.w';
+            layer.wc = fft2(ifft2(layer.w)');
         end
         
         function Z = predict(layer, X)
@@ -137,9 +137,9 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
             %    of state parameters.
 
             % Define layer backward function here.
-            dLdX = zeros(size(X), 'like' X);
+            dLdX = zeros(size(X), 'like', X);
             for i=1:size(X, 4)
-                Q=real(ifft(ifft(real(fftshift(fft2dLdZ)) .* layer.wc) ) ) 
+                dLdX(:,:,1,i)=abs(ifft(ifft(ifftshift(fft(fft(real(fftshift(dLdZ(:,:,1,i)))).' ).' .* layer.wc )).').');
             end
         end
     end

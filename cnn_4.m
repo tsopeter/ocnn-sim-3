@@ -4,7 +4,7 @@
 clear;
 parameters_3;
 
-InputLayer     = imageInputLayer([dimx, dimy, 1], 'Name', 'input', 'Normalization', 'none');
+InputLayer     = imageInputLayer([dimx, dimy, 1], 'Name', 'input', 'Normalization', 'rescale-zero-one');
 KernelLayer    = CustomAmplitudeKernelLayer('kernel', real(kernel));
 DLPEndLayer    = CustomDLPEndLayer('dlp_end', Nx, Ny);
 Prevention1    = CustomNaNPreventionLayer('prevention1', lvalue);
@@ -50,6 +50,7 @@ options = trainingOptions('adam', ...
     Verbose=true,...
     Plots='training-progress',...
     ExecutionEnvironment='auto',...
+    DispatchInBackground=true,...
     MiniBatchSize=miniBatchSize);
 
 net = trainNetwork(dataTrain,lgraph,options);
