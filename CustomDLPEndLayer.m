@@ -8,6 +8,7 @@ classdef CustomDLPEndLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
         % Declare layer properties here.
         Nx
         Ny
+        lvalue
     end
 
     properties (Learnable)
@@ -30,7 +31,7 @@ classdef CustomDLPEndLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
     end
 
     methods
-        function layer = CustomDLPEndLayer(Name, Nx, Ny)
+        function layer = CustomDLPEndLayer(Name, Nx, Ny, lvalue)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
 
@@ -40,6 +41,7 @@ classdef CustomDLPEndLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
             layer.NumOutputs = 1;
             layer.Nx         = Nx;
             layer.Ny         = Ny;
+            layer.lvalue     = lvalue;
         end
         
         function Z = predict(layer, X)

@@ -6,9 +6,9 @@ parameters_3;
 
 InputLayer     = imageInputLayer([dimx, dimy, 1], 'Name', 'input', 'Normalization', 'rescale-zero-one');
 KernelLayer    = CustomAmplitudeKernelLayer('kernel', real(kernel));
-DLPEndLayer    = CustomDLPEndLayer('dlp_end', Nx, Ny);
+DLPEndLayer    = CustomDLPEndLayer('dlp_end', Nx, Ny, lvalue);
 Prevention1    = CustomNaNPreventionLayer('prevention1', lvalue);
-Prop1          = CustomPropagationLayer('prop1', Nx, Ny, nx, ny, d1, wv);
+Prop1          = CustomFastPropagationLayer('prop1', Nx, Ny, nx, ny, d1, wv);
 Non1           = CustomNonlinearLayer('non1', lvalue, sx, sy, sc, sz);
 Flatten        = CustomFlattenLayer(1, 'flatten', Nx, Ny, nx, ny, r1, r2, lvalue);
 Softmax        = softmaxLayer("Name", 'softmax');
@@ -50,7 +50,7 @@ options = trainingOptions('adam', ...
     Verbose=true,...
     Plots='training-progress',...
     ExecutionEnvironment='auto',...
-    DispatchInBackground=true,...
+    DispatchInBackground=false,...
     MiniBatchSize=miniBatchSize);
 
 net = trainNetwork(dataTrain,lgraph,options);

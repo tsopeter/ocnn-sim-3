@@ -9,8 +9,8 @@ Ny     = 256;
 ratio  = 1;
 ix     = round(Nx/ratio);
 iy     = round(Ny/ratio);
-nx     = 1660e-6;
-ny     = 1660e-6;
+nx     = 10.58e-3;
+ny     = 10.58e-3;
 d1     = 10e-2;
 d2     = 10e-2;
 wv     = 650e-9;
@@ -37,9 +37,9 @@ dataTest  = create_imagedatastore(filenameLabelsTest , "DLPTestImagesPNG/");
 %dataTrain = create_xor_imagedatastore("XORLabels/train_labels.mat", "TrainImagesXOR");
 %dataTest  = create_xor_imagedatastore("XORLabels/test_labels.mat" , "TestImagesXOR");
 
-numEpochs = 32;
+numEpochs = 64;
 miniBatchSize = 128;
-learnRate = 5e-5;
+learnRate = (5e-4)/4;
 
 dataTest  = partition(dataTest , 10 , 1);
 Sx = Nx;

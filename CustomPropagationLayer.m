@@ -96,7 +96,7 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
             % normalize and apply layer weights
             Z = zeros(size(X), 'like', X);
             for i=1:size(X, 4)
-                Z(:,:,1,i)=abs(ifft(ifft(ifftshift(fft(fft(real(fftshift(X(:,:,1,i)))).' ).' .* layer.w )).').');
+                Z(:,:,1,i)=abs(ifft(ifft(ifftshift(fftshift(fft(fft(real(X(:,:,1,i))).' ).') .* layer.w )).').');
             end
         end
 

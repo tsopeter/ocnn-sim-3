@@ -1,4 +1,4 @@
-classdef CustomFastPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable 
+classdef CustomFFT1Layer < nnet.layer.Layer %  & nnet.layer.Acceleratable 
         % & nnet.layer.Formattable ... % (Optional) 
         % & nnet.layer.Acceleratable % (Optional)
 
@@ -6,15 +6,8 @@ classdef CustomFastPropagationLayer < nnet.layer.Layer %  & nnet.layer.Accelerat
         % (Optional) Layer properties.
 
         % Declare layer properties here.
-        w
-        wc
-        Nx
-        Ny
-        nx
-        ny
-        d
-        wv
-        scale
+        F
+        Fc
     end
 
     properties (Learnable)
@@ -37,7 +30,7 @@ classdef CustomFastPropagationLayer < nnet.layer.Layer %  & nnet.layer.Accelerat
     end
 
     methods
-        function layer = CustomFastPropagationLayer(Name, Nx, Ny, nx, ny, d, wv)
+        function layer = CustomFFT1Layer(Name, F)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
 
@@ -46,33 +39,8 @@ classdef CustomFastPropagationLayer < nnet.layer.Layer %  & nnet.layer.Accelerat
             layer.NumInputs = 1;
             layer.NumOutputs = 1;
 
-            layer.Nx = Nx;
-            layer.Ny = Ny;
-            layer.nx = nx;
-            layer.ny = ny;
-            layer.d  = d;
-            layer.wv = wv;
-            layer.scale = 1/(4*sqrt(pi));
-            layer = layer.compute_w();
-        end
-
-        function layer = compute_w(layer)
-            k=2*pi/layer.wv;
-            f_dx = layer.Nx/layer.nx;
-            f_dy = layer.Ny/layer.ny;
-
-            posx = linspace(-f_dx/2, f_dx/2-layer.Nx, layer.Nx);
-            posy = linspace(-f_dy/2, f_dy/2-layer.Ny, layer.Ny);
-            [fxx, fyy] = meshgrid(posx, posy);
-            a = layer.wv .* fxx;
-            b = layer.wv .* fyy;
-            g = a.^2+b.^2;
-            t = sqrt(1-a.^2-b.^2);
-            g(g>1)=NaN;
-            g(g<=1)=t(g<=1);
-            g(isnan(g))=0;
-            layer.w = exp(1i*k*g*layer.d)*layer.scale;
-            layer.wc = layer.w';
+            layer.F = F;
+            layer.Fc = conj(F);
         end
         
         function Z = predict(layer, X)
@@ -98,13 +66,9 @@ classdef CustomFastPropagationLayer < nnet.layer.Layer %  & nnet.layer.Accelerat
             % normalize and apply layer weights
             Z = zeros(size(X), 'like', X);
             for i=1:size(X, 4)
-                fp1 = fft(real(X(:,:,1,1))).';
-                fp2 = fft(fp1).';
-                fp3 = ifftshift(fftshift(fp2) .* layer.w);
-                zp1 = ifft(fp3).';
-                zp2 = ifft(zp1).';
-                % Z(:,:,1,1)=abs(zp2);
-                Z(:,:,1,1)=real(zp2.*conj(zp2));
+                fp = fftshift(fft(real(X(:,:,1,1)))) .* layer.F;
+                zp = ifft(ifftshift(fp));
+                Z(:,:,1,i)=abs(zp);
             end
         end
 
@@ -144,23 +108,25 @@ classdef CustomFastPropagationLayer < nnet.layer.Layer %  & nnet.layer.Accelerat
             %    dLdSout1,...,dldSoutK, respectively, where K is the number
             %    of state parameters.
 
+            %
+            % y=abs(x)
+            % dydx =
+
             % Define layer backward function here.
             dLdX = zeros(size(X), 'like', X);
             for i=1:size(X, 4)
-                fp1 = fft(real(X(:,:,1,1))).';
-                fp2 = fft(fp1).';
-                fp3 = ifftshift(fftshift(fp2) .* layer.w);
-                zp1 = ifft(fp3).';
-                zp2 = ifft(zp1).';
-                
-                dLdh = 2 * dLdZ(:,:,1,i) .* zp2;
+                % first pass
+                % z = abs(h)
+                % dldh = dldz .* h/abs(h)
 
-                dlfp1 = fft(dLdh).';
-                dlfp2 = fft(dlfp1).';
-                dlfp3 = ifftshift(fftshift(dlfp2) .* layer.wc);
-                dlzp1 = ifft(dlfp3).';
-                dlzp2 = ifft(dlzp1).';
-                dLdX(:,:,1,1)=real(dlzp2);
+                fp = fftshift(fft(real(X(:,:,1,1)))) .* layer.F;
+                zp = ifft(ifftshift(fp));
+
+                dLdh = dLdZ(:,:,1,i) .* zp ./ abs(zp);
+
+                dlfp = fftshift(fft(dLdh)) .* layer.Fc;
+                dlzp = ifft(ifftshift(dlfp));
+                dLdX(:,:,1,1)=real(dlzp);
             end
         end
     end
