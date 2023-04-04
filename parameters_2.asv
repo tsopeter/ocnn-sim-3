@@ -7,10 +7,10 @@ Ny     = 128;
 ratio  = 2;
 ix     = round(Nx/ratio);
 iy     = round(Ny/ratio);
-nx     = 10e-3;
+nx     = 1e-3;
 ny     = 10e-3;
-d1     = 25e-2;
-d2     = 25e-2;
+d1     = 10e-2;
+d2     = 10e-2;
 wv     = 650e-9;
 a0     = 20;
 r1     = nx/4;
@@ -36,7 +36,7 @@ dataTest  = create_imagedatastore(filenameLabelsTest , "TestImagesPNG/");
 %dataTest  = create_xor_imagedatastore("XORLabels/test_labels.mat" , "TestImagesXOR");
 
 numEpochs = 32;
-miniBatchSize = 256;
+miniBatchSize = 512;
 learnRate = 5e-3;
 
 dataTest  = partition(dataTest , 10 , 1);

@@ -15,6 +15,7 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
         ny
         d
         wv
+        scale
     end
 
     properties (Learnable)
@@ -52,10 +53,30 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
             layer.ny = ny;
             layer.d  = d;
             layer.wv = wv;
+            layer.scale = 1/sqrt(2*pi);
             layer = layer.compute_w();
         end
 
         function layer = compute_w(layer)
+            k=2*pi/layer.wv;
+            f_dx = layer.Nx/layer.nx;
+            f_dy = layer.Ny/layer.ny;
+
+            posx = linspace(-f_dx/2, f_dx/2-layer.Nx, layer.Nx);
+            posy = linspace(-f_dy/2, f_dy/2-layer.Ny, layer.Ny);
+            [fxx, fyy] = meshgrid(posx, posy);
+            a = layer.wv .* fxx;
+            b = layer.wv .* fyy;
+            g = a.^2+b.^2;
+            t = sqrt(1-a.^2-b.^2);
+            g(g>1)=NaN;
+            g(g<=1)=t(g<=1);
+            g(isnan(g))=0;
+            layer.w = exp(1i*k*g*layer.d)*layer.scale;
+            layer.wc = layer.w';
+        end
+
+        function layer = legacy_compute_w(layer)
             dx = layer.nx/layer.Nx;
             dy = layer.ny/layer.Ny;
             
@@ -95,8 +116,17 @@ classdef CustomPropagationLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
             % Define layer predict function here.
             % normalize and apply layer weights
             Z = zeros(size(X), 'like', X);
+            %for i=1:size(X, 4)
+            %    Z(:,:,1,i)=abs(ifft(ifft(ifftshift(fftshift(fft(fft(real(X(:,:,1,i))).' ).') .* layer.w )).').');
+            %end
             for i=1:size(X, 4)
-                Z(:,:,1,i)=abs(ifft(ifft(ifftshift(fftshift(fft(fft(real(X(:,:,1,i))).' ).') .* layer.w )).').');
+                fp1 = fft(real(X(:,:,1,1))).';
+                fp2 = fft(fp1).';
+                fp3 = ifftshift(fftshift(fp2) .* layer.w);
+                zp1 = ifft(fp3).';
+                zp2 = ifft(zp1).';
+                % Z(:,:,1,1)=abs(zp2);
+                Z(:,:,1,i)=real(zp2.*conj(zp2));
             end
         end
 

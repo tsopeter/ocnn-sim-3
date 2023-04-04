@@ -71,12 +71,12 @@ classdef CustomPhaseKernelLayer < nnet.layer.Layer %  & nnet.layer.Acceleratable
 
         function display_kernel_magnitude(layer)
             figure;
-            imagesc(extractdata(abs(layer.W1+1i*layer.W2)));
+            imagesc(extractdata(abs(cos(layer.phi)+1i*sin(layer.phi))));
         end
 
         function display_kernel_angle(layer)
             figure;
-            imagesc(extractdata(angle(layer.W1+1i*layer.W2)));
+            imagesc(extractdata(layer.phi));
         end
 
 %         function [dLdX, dLdW1, dLdW2] = backward(layer, X, Z1, Z2, dLdZ1, dLdZ2, dLdSout)

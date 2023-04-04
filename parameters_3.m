@@ -4,8 +4,8 @@
 %
 % parameters
 
-Nx     = 256;
-Ny     = 256;
+Nx     = 512;
+Ny     = 512;
 ratio  = 1;
 ix     = round(Nx/ratio);
 iy     = round(Ny/ratio);
@@ -13,16 +13,16 @@ nx     = 10.58e-3;
 ny     = 10.58e-3;
 d1     = 10e-2;
 d2     = 10e-2;
-wv     = 650e-9;
+wv     = 400e-9;
 a0     = 20;
-r1     = nx/4;
-r2     = nx/20;
+r1     = nx/6;
+r2     = nx/30;
 rate   = 1;
 lvalue = 1e-6;
 sx     = 2;
 sy     = 1;
 sc     = 0.45;
-sz     = 0.2;
+sz     = 2e-3;
 P      = 1;
 probability = 0.25;
 
@@ -39,11 +39,11 @@ dataTest  = create_imagedatastore(filenameLabelsTest , "DLPTestImagesPNG/");
 
 numEpochs = 64;
 miniBatchSize = 128;
-learnRate = (5e-4)/4;
+learnRate = (5e-4);
 
 dataTest  = partition(dataTest , 10 , 1);
-Sx = Nx;
-Sy = Ny;
+Sx = 256;
+Sy = 256;
 C  = 1;
 
 dimx = Sx;

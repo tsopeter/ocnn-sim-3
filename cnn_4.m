@@ -2,9 +2,11 @@
 % CNN
 
 clear;
+clc;
 parameters_3;
 
 InputLayer     = imageInputLayer([dimx, dimy, 1], 'Name', 'input', 'Normalization', 'rescale-zero-one');
+ResizeLayer    = resize2dLayer("Name", 'resize', 'OutputSize', [Nx Ny], 'Method','nearest', 'NearestRoundingMode','round');
 KernelLayer    = CustomAmplitudeKernelLayer('kernel', real(kernel));
 DLPEndLayer    = CustomDLPEndLayer('dlp_end', Nx, Ny, lvalue);
 Prevention1    = CustomNaNPreventionLayer('prevention1', lvalue);
@@ -15,6 +17,7 @@ Softmax        = softmaxLayer("Name", 'softmax');
 Classification = classificationLayer("Name", 'classification');
 layers = [
     InputLayer
+    ResizeLayer
     KernelLayer
     DLPEndLayer
     Prevention1
@@ -30,7 +33,8 @@ for i=1:length(layers)
     lgraph = addLayers(lgraph, layers(i));
 end
 
-lgraph = connectLayers(lgraph, 'input', 'kernel');
+lgraph = connectLayers(lgraph, 'input', 'resize');
+lgraph = connectLayers(lgraph, 'resize', 'kernel');
 lgraph = connectLayers(lgraph, 'kernel', 'dlp_end');
 lgraph = connectLayers(lgraph, 'dlp_end', 'prevention1');
 lgraph = connectLayers(lgraph, 'prevention1', 'prop1');

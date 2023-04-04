@@ -52,7 +52,7 @@ classdef CustomFastPropagationLayer < nnet.layer.Layer %  & nnet.layer.Accelerat
             layer.ny = ny;
             layer.d  = d;
             layer.wv = wv;
-            layer.scale = 1/(4*sqrt(pi));
+            layer.scale = 1/(sqrt(2*pi));
             layer = layer.compute_w();
         end
 
@@ -104,7 +104,7 @@ classdef CustomFastPropagationLayer < nnet.layer.Layer %  & nnet.layer.Accelerat
                 zp1 = ifft(fp3).';
                 zp2 = ifft(zp1).';
                 % Z(:,:,1,1)=abs(zp2);
-                Z(:,:,1,1)=real(zp2.*conj(zp2));
+                Z(:,:,1,i)=real(zp2.*conj(zp2));
             end
         end
 
@@ -160,7 +160,7 @@ classdef CustomFastPropagationLayer < nnet.layer.Layer %  & nnet.layer.Accelerat
                 dlfp3 = ifftshift(fftshift(dlfp2) .* layer.wc);
                 dlzp1 = ifft(dlfp3).';
                 dlzp2 = ifft(dlzp1).';
-                dLdX(:,:,1,1)=real(dlzp2);
+                dLdX(:,:,1,i)=real(dlzp2);
             end
         end
     end
