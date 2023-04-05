@@ -7,8 +7,8 @@ parameters_3;
 
 InputLayer     = imageInputLayer([dimx, dimy, 1], 'Name', 'input', 'Normalization', 'rescale-zero-one');
 ResizeLayer    = resize2dLayer("Name", 'resize', 'OutputSize', [Nx Ny], 'Method','nearest', 'NearestRoundingMode','round');
-KernelLayer    = CustomAmplitudeKernelLayer('kernel', real(kernel));
-DLPEndLayer    = CustomDLPEndLayer('dlp_end', Nx, Ny, lvalue);
+KernelLayer    = CustomAmplitudeKernelLayer('kernel', randn([Nx, Ny]));
+DLPEndLayer    = CustomDLPEndLayer('dlp_end', Nx, Ny, mm);
 Prevention1    = CustomNaNPreventionLayer('prevention1', lvalue);
 Prop1          = CustomFFT2PropagationLayer('prop1', Nx, Ny, nx, ny, d1, wv);
 Non1           = CustomNonlinearLayer('non1', lvalue, sx, sy, sc, sz);

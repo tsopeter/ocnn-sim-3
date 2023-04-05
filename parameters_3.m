@@ -9,10 +9,10 @@ Ny     = 512;
 ratio  = 1;
 ix     = round(Nx/ratio);
 iy     = round(Ny/ratio);
-nx     = 10.58e-3;
-ny     = 10.58e-3;
-d1     = 10e-2;
-d2     = 10e-2;
+nx     = 21.16e-3;
+ny     = 21.16e-3;
+d1     = 20e-2;
+d2     = 20e-2;
 wv     = 400e-9;
 a0     = 20;
 r1     = nx/6;
@@ -22,8 +22,9 @@ lvalue = 1e-6;
 sx     = 2;
 sy     = 1;
 sc     = 0.45;
-sz     = 2e-3;
+sz     = 1/6;
 P      = 1;
+mm     = 2 * 10e3;
 probability = 0.25;
 
 filenameImagesTrain = 'Images/train-images-idx3-ubyte.gz';
@@ -39,7 +40,7 @@ dataTest  = create_imagedatastore(filenameLabelsTest , "DLPTestImagesPNG/");
 
 numEpochs = 64;
 miniBatchSize = 128;
-learnRate = (5e-4);
+learnRate = (1e-4);
 
 dataTest  = partition(dataTest , 10 , 1);
 Sx = 256;
