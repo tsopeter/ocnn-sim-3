@@ -57,21 +57,7 @@ classdef CustomFFT2PropagationLayer < nnet.layer.Layer %  & nnet.layer.Accelerat
         end
 
         function layer = compute_w(layer)
-            k=2*pi/layer.wv;
-            f_dx = layer.Nx/layer.nx;
-            f_dy = layer.Ny/layer.ny;
-
-            posx = linspace(-f_dx/2, f_dx/2-layer.Nx, layer.Nx);
-            posy = linspace(-f_dy/2, f_dy/2-layer.Ny, layer.Ny);
-            [fxx, fyy] = meshgrid(posx, posy);
-            a = layer.wv .* fxx;
-            b = layer.wv .* fyy;
-            g = a.^2+b.^2;
-            t = sqrt(1-a.^2-b.^2);
-            g(g>1)=NaN;
-            g(g<=1)=t(g<=1);
-            g(isnan(g))=0;
-            layer.w = exp(1i*k*g*layer.d)*layer.scale;
+            layer.w  = angular_propagation(layer.Nx, layer.Ny, layer.nx, layer.ny, layer.wv, layer.d);
             layer.wc = layer.w';
         end
         
