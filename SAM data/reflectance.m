@@ -2,8 +2,9 @@ clear
 
 load SAM_measured0.txt  %1st measurement
 a1 = 10.^(SAM_measured0(1:15,:)/10);
+a1(:,1)=a1(:,1)/1e3;
 R1 = a1(:,2)./a1(:,1);
-x1 = a1(1,1):0.01:a1(end,1);
+x1 = linspace(a1(1,1),a1(end,1),100);
 Y1 = interp1(a1(:,1),R1,x1);
 YY1 = polyfit(x1,Y1,5);
 y1 = polyval(YY1,x1);

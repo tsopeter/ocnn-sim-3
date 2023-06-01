@@ -27,7 +27,6 @@ y0 = polyval(YY0,x0);
 
 plot(a1(:,1),a1(:,2),'.',x1,y1,a2(:,1),a2(:,2),'.',x2,y2,a0(:,1),a0(:,2)/2,'.',x0,y0/2)
 axis([0 10 0 1.1])
-legend('1st measurement', '2nd measurement', 'regular mirror');
 grid
 xlabel('Input power (mW)')
 ylabel('Reflected power (mW)')

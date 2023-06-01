@@ -1,3 +1,5 @@
+%parameters 4
+
 %parameters_3
 
 % parameters-2
@@ -6,7 +8,7 @@
 
 %
 % note that the base measurement are
-% W (Watts)
+% mW (Watts)
 % M (Meters)
 
 Nx     = 512;
@@ -28,7 +30,7 @@ sx     = 2;
 sy     = 1;
 sc     = 0.45;
 sz     = 1/6;
-P      = 1e-3;      % default power of 1 mW
+P      = 1;     % default power of 1 mW
 mm     = 2 * 10e3;
 probability = 0.25;
 

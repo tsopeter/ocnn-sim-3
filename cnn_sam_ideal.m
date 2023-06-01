@@ -8,7 +8,7 @@ clc;
 
 % parameters
 ss     = [28, 28, 1];
-P      = 1e-3;   % default power of 1 mW
+P      = 1;   % default power of 1 mW
 PMax   = 20e-3;  % maximum power of 20 mW
 lvalue = 1e-6;   % minimum power of 1 uW
 RR     = 100;    % rise-rate value for emulating DLP
@@ -22,9 +22,9 @@ dataTrain = create_imagedatastore(filenameLabelsTrain, "SAMTrainImagesPNG/");
 dataTest  = create_imagedatastore(filenameLabelsTest , "SAMTestImagesPNG/");
 dataTest  = partition(dataTest , 10 , 1);   % to reduce validation time
 
-learnRate     = 5e-3;
-maxEpochs     = 4;
-numEpochs     = 4;
+learnRate     = 3e-3;
+maxEpochs     = 100;
+numEpochs     = 100;
 miniBatchSize = 128;
 
 %
@@ -33,9 +33,9 @@ miniBatchSize = 128;
 %
 
 addpath(genpath('SAM data'));
-[P0, D0] = SAM_poly();
+[P0, D0] = SAM_poly_mW();
 
-kernel   = randn(ss);
+kernel   = randn(ss)*P;
 
 % we take the input
 InputLayer     = imageInputLayer(ss, 'Name', 'input', 'Normalization', 'rescale-zero-one');

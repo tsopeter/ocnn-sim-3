@@ -5,15 +5,6 @@ clear;
 clc;
 parameters_4;
 
-%
-% If the folders
-% DLPTrainImagesPNG
-% DLPTestImagesPNG
-% are not yet created and filled
-% , create folders
-% and run fast_create_images_script to
-% populate it
-
 addpath(genpath('SAM data'));
 [P0, D0] = SAM_polyn_mW();
 
@@ -32,20 +23,12 @@ addpath(genpath('SAM data'));
 % and others do not depend on it
 %
 % Note: With DLPEndLayer
-% this caps the maximum Amplitude to 1 mW and
-% the minimum ampitude to 0 mW.
+% this caps the maximum Ampl
 
 InputLayer     = imageInputLayer([dimx, dimy, 1], 'Name', 'input', 'Normalization', 'rescale-zero-one');
 ResizeLayer    = resize2dLayer("Name", 'resize', 'OutputSize', [Nx Ny], 'Method','nearest', 'NearestRoundingMode','round');
-%KernelLayer    = CustomAmplitudeKernelLayer('kernel', randn([Nx, Ny]));
-%DLPEndLayer    = CustomDLPEndLayer('dlp_end', Nx, Ny, mm);
-
-Prevention0A    = CustomNaNPreventionLayer('prevention0A', lvalue);
-Prevention0B    = CustomNaNPreventionLayer('prevention0B', lvalue);
-
-KernelLayer    = CustomPhaseKernelLayer('kernel', kernel, lvalue);
-Polarizer      = CustomPolarizationLayer('polarizer');
-
+KernelLayer    = CustomAmplitudeKernelLayer('kernel', randn([Nx, Ny]));
+DLPEndLayer    = CustomDLPEndLayer('dlp_end', Nx, Ny, mm);
 Prevention1    = CustomNaNPreventionLayer('prevention1', lvalue);
 Prop1          = CustomFFT2mWPropagationLayer('prop1', Nx, Ny, nx, ny, d1, wv);
 %Non1           = CustomNonlinearLayer('non1', lvalue, sx, sy, sc, sz);
@@ -57,10 +40,7 @@ layers = [
     InputLayer
     ResizeLayer
     KernelLayer
-    Prevention0A
-    Prevention0B
-    %DLPEndLayer
-    Polarizer
+    DLPEndLayer
     Prevention1
     Prop1
     %Non1
@@ -77,11 +57,8 @@ end
 
 lgraph = connectLayers(lgraph, 'input', 'resize');
 lgraph = connectLayers(lgraph, 'resize', 'kernel');
-lgraph = connectLayers(lgraph, 'kernel/out1', 'prevention0A');
-lgraph = connectLayers(lgraph, 'kernel/out2', 'prevention0B');
-lgraph = connectLayers(lgraph, 'prevention0A', 'polarizer/in1');
-lgraph = connectLayers(lgraph, 'prevention0B', 'polarizer/in2');
-lgraph = connectLayers(lgraph, 'polarizer', 'prevention1');
+lgraph = connectLayers(lgraph, 'kernel', 'dlp_end');
+lgraph = connectLayers(lgraph, 'dlp_end', 'prevention1');
 lgraph = connectLayers(lgraph, 'prevention1', 'prop1');
 lgraph = connectLayers(lgraph, 'prop1', 'DUT');
 lgraph = connectLayers(lgraph, 'DUT', 'flatten');
