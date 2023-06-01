@@ -1,0 +1,73 @@
+% cnn-sam-ideal
+
+clear;
+clc;
+
+%
+% this is a simple 2x2 network to test just SAM reflectivity
+
+% parameters
+ss     = [28, 28, 1];
+P      = 1e-3;   % default power of 1 mW
+PMax   = 20e-3;  % maximum power of 20 mW
+lvalue = 1e-6;   % minimum power of 1 uW
+RR     = 100;    % rise-rate value for emulating DLP
+
+learnRate = 5e-3;
+maxEpochs = 200;
+
+
+%
+%   | A | B |
+%   | C | D |
+%
+
+addpath(genpath('SAM data'));
+[P0, D0] = SAM_poly();
+
+kernel   = randn(ss);
+
+% we take the input
+InputLayer     = imageInputLayer(ss, 'Name', 'input', 'Normalization', 'rescale-zero-one');
+Kernel         = CustomAmplitudeKernelLayer('Kernel', kernel);
+SAM            = CustomPolynomialNonLinearLayer('SAM', P0, D0, ss(1));
+Prevention     = CustomNaNPreventionLayer('prevention', lvalue);
+Flatten        = flattenLayer('Name', 'flatten');
+SoftMax        = softmaxLayer('Name', 'softmax');
+Classification = classificationLayer('Name', 'classification');
+
+layers = [
+    InputLayer
+    Kernel
+    SAM
+    Prevention
+    Flatten
+    SoftMax
+    Classification
+];
+lgraph = layerGraph();
+for i=1:length(layers)
+    lgraph = addLayers(lgraph, layers(i));
+end
+
+lgraph = connectLayers(lgraph, 'input', 'Kernel');
+lgraph = connectLayers(lgraph, 'Kernel', 'SAM');
+lgraph = connectLayers(lgraph, 'SAM', 'prevention');
+lgraph = connectLayers(lgraph, 'prevention', 'flatten');
+lgraph = connectLayers(lgraph, 'flatten', 'softmax');
+lgraph = connectLayers(lgraph, 'softmax', 'classification');
+
+plot(lgraph);
+
+%
+%
+% the structure should be
+%
+%   [Input]->[Kernel]->[SAM]->[Flatten]->[SoftMax]->Classification
+%   
+%   Note that power is not capped yet,
+%   if there are any visible issues, then we should cap it
+
+options = trainingOptions('adam', ...
+    InitialLearnRate=learnRate,...
+    MaxEpochs=maxEpochs)

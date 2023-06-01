@@ -1,0 +1,15 @@
+function [P0, D0] = SAM_poly()
+    %
+    % scale
+    lm0 = load('SAM data/Linear_mirror.txt');
+    a0  = 10.^(lm0/10);
+    R0  = a0(:,2)/
+
+    sm0 = load('SAM data/SAM_measured0.txt');
+    a1  = 10.^(sm0(1:15,:)/10);
+    R1  = a1(:,2)/a1(:,1);
+    x1  = a1(1,1):0.01:a1(end,1);
+    Y1  = interp1(a1(:,1),R1,x1);
+    YY1 = polyfit(x1,Y1,5);
+
+end
