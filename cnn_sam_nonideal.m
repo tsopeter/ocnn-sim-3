@@ -16,6 +16,8 @@ parameters_4;
 
 addpath(genpath('SAM data'));
 [P0, D0] = SAM_polyn_mW();
+xnormal = 1;
+ynormal = 1;
 
 %
 % NOTE
@@ -49,7 +51,7 @@ Polarizer      = CustomPolarizationLayer('polarizer');
 Prevention1    = CustomNaNPreventionLayer('prevention1', lvalue);
 Prop1          = CustomFFT2mWPropagationLayer('prop1', Nx, Ny, nx, ny, d1, wv);
 %Non1           = CustomNonlinearLayer('non1', lvalue, sx, sy, sc, sz);
-DUT            = CustomPolynomialNonLinearLayer('DUT', P0, D0, [dimx, dimy, 1]);
+DUT            = CustomPolynomialNonLinearLayer('DUT', P0, D0, [Nx, Ny, 1], xnormal, ynormal);
 Flatten        = CustomFlattenLayer(1, 'flatten', Nx, Ny, nx, ny, r1, r2, lvalue);
 Softmax        = softmaxLayer("Name", 'softmax');
 Classification = classificationLayer("Name", 'classification');

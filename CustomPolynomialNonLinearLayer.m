@@ -11,6 +11,8 @@ classdef CustomPolynomialNonLinearLayer < nnet.layer.Layer
         %
         % Needed properties
         ss
+        xnormal
+        ynormal
     end
 
     %
@@ -24,7 +26,7 @@ classdef CustomPolynomialNonLinearLayer < nnet.layer.Layer
     end
 
     methods
-        function layer = CustomPolynomialNonLinearLayer (Name, poly, der, ss)
+        function layer = CustomPolynomialNonLinearLayer (Name, poly, der, ss, xnormal, ynormal)
             layer.Name       = Name;
             layer.NumInputs  = 1;
             layer.NumOutputs = 1;
@@ -33,20 +35,16 @@ classdef CustomPolynomialNonLinearLayer < nnet.layer.Layer
             layer.P0         = poly;
             layer.D0         = der;
             
+            layer.xnormal    = xnormal;
+            layer.ynormal    = ynormal;
         end
 
         function Z = predict(layer, X)
-            Z = zeros(size(X),'like',X);
-            for i=1:size(X,4)
-                Z(:,:,1,i) = polyvalm(layer.P0, X(:,:,1,i));
-            end
+            Z = polyval(layer.P0, X*layer.xnormal)/layer.ynormal;
         end
 
         function dLdX = backward(layer, X, Z, dLdZ, dLdSout)
-            dZdX = zeros(size(X),'like',X);
-            for i=1:size(X,4)
-                dZdX(:,:,1,i) = polyvalm(layer.D0, X(:,:,1,i));
-            end
+            dZdX = polyval(layer.D0*layer.xnormal, X*layer.xnormal)/layer.ynormal;
             dLdX = dLdZ .* dZdX;
         end
     end

@@ -17,6 +17,6 @@ function [P0, D0] = SAM_polyn_mW()
 
     P0 = YY1/scal;
     D0 = polyder(P0);
-    figure;
-    plot(x1, polyval(P0,x1));
+    %figure;
+    %plot(x1, polyval(P0,x1));
 end
