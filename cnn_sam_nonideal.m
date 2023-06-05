@@ -37,6 +37,14 @@ ynormal = 1;
 % this caps the maximum Amplitude to 1 mW and
 % the minimum ampitude to 0 mW.
 
+Nx = dimx;  % reset resolution from 512 to 256, effectively speeding up training by 4x
+Ny = dimy;
+
+% recompute angluar spectrum sources and kernel
+w1 = fftshift(get_propagation_distance(Nx, Ny, nx, ny, d1, wv));
+w2 = fftshift(get_propagation_distance(Nx, Ny, nx, ny, d2, wv));
+kernel = internal_random_amp(Nx, Ny)*IPower;        % create the kernel
+
 InputLayer     = imageInputLayer([dimx, dimy, 1], 'Name', 'input', 'Normalization', 'rescale-zero-one');
 ResizeLayer    = resize2dLayer("Name", 'resize', 'OutputSize', [Nx Ny], 'Method','nearest', 'NearestRoundingMode','round');
 %KernelLayer    = CustomAmplitudeKernelLayer('kernel', randn([Nx, Ny]));
@@ -57,7 +65,8 @@ Softmax        = softmaxLayer("Name", 'softmax');
 Classification = classificationLayer("Name", 'classification');
 layers = [
     InputLayer
-    ResizeLayer
+    %ResizeLayer % remove resize layer and train on 256x256 (more than
+                 %enough resolution
     KernelLayer
     Prevention0A
     Prevention0B
@@ -77,8 +86,11 @@ for i=1:length(layers)
     lgraph = addLayers(lgraph, layers(i));
 end
 
-lgraph = connectLayers(lgraph, 'input', 'resize');
-lgraph = connectLayers(lgraph, 'resize', 'kernel');
+%lgraph = connectLayers(lgraph, 'input', 'resize');
+%lgraph = connectLayers(lgraph, 'resize', 'kernel');
+
+lgraph = connectLayers(lgraph, 'input', 'kernel');
+
 lgraph = connectLayers(lgraph, 'kernel/out1', 'prevention0A');
 lgraph = connectLayers(lgraph, 'kernel/out2', 'prevention0B');
 lgraph = connectLayers(lgraph, 'prevention0A', 'polarizer/in1');
