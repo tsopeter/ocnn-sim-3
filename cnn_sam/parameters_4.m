@@ -52,7 +52,7 @@ dataTest  = create_imagedatastore(filenameLabelsTest , "DLPTestImagesPNG/");
 
 numEpochs = 64;             % number of epochs
 miniBatchSize = 128;        % size of batches per epoch
-learnRate = (1e-4);         % learn rate (reduce when NaNs occur)
+learnRate = (5e-4);         % learn rate (reduce when NaNs occur)
 
 dataTest  = partition(dataTest , 10 , 1);
 Sx = 256;
