@@ -14,7 +14,8 @@ ynormal = 1.2756;
 %checkLayer(CustomNonlinearLayer('no_name', lvalue, sx, sy, sc, sz), {[Nx, Ny]});
 %checkLayer(CustomFFT2PropagationLayer('no_name', Nx, Ny, nx, ny, d1, wv), {[Nx, Ny]});
 %checkLayer(CustomDLPEndLayer('no_name', Nx, Ny, lvalue), {[Nx, Ny]});
-checkLayer(CustomPolynomialNonLinearLayer('no_name', P0, D0, [32, 32, 1], xnormal, ynormal), {[32, 32]});
+%checkLayer(CustomPolynomialNonLinearLayer('no_name', P0, D0, [32, 32, 1], xnormal, ynormal), {[32, 32]});
+checkLayer(CustomPositiveLayer('no_name'), {[32 32]});
 
 %d1 = 1e-9;
 %H = angular_propagation(Nx, Ny, nx, ny, wv, d1);

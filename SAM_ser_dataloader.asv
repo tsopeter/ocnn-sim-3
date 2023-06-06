@@ -1,0 +1,20 @@
+%
+% load data
+% P0    - polynomials fitted to data
+% D0    - derivatives of polynomials fitted to data
+function [P0, D0] = SAM_ser_dataloader()
+    ch1   = load('SAM data-2/SAM1001_Ch1.dat');
+    ch2   = load('SAM data-2/SAM1001_Ch2.dat');
+    dt    = 4e-6;
+    t     = (0:length(ch1)-1)*dt;
+    n1    = 188;
+    a1    = circshift(ch1, -n1);
+    b1    = circshift(ch2, -n1);
+    aa1   = reshape(a1, 250, 40);
+    bb1   = reshape(b1, 250, 40);
+    aave1 = mean(aa1, 2);
+    bave1 = mean(bb1, 2);
+
+    ss = length(bave1); 
+    s2 = bave1()
+end
