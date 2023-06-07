@@ -15,24 +15,24 @@ dataTest  = create_imagedatastore(filenameLabelsTest , "DLPTestImagesPNG/");
 dataTest  = partition(dataTest, 10, 1);
 
 % network training parameters
-learnRate     = 1e-4;
+learnRate     = 3e-4;
 numEpochs     = 64;
 miniBatchSize = 128;
 
 
 % network topography parameters
 ss     = [256 256 1];
-kernel = abs(randn(ss));
+kernel = randn(ss);
 
 nxx    = 1;
-rxx1   = 1/3;
-rxx2   = 1/15;
+rxx1   = 1/5;
+rxx2   = 1/24;
 lval   = 1e-6;
 
 %
 % get the parameters
 [P0, D0, t0] = SAM_ser_dataloader(4);
-xnormal = 1e3;  % normalize the curve to approximately 1 (should be fine for now)
+xnormal = 0.5*1e3;  % normalize the curve to approximately 1 (should be fine for now)
 ynormal = 1;
 
 %
@@ -44,7 +44,9 @@ inputLayer     = imageInputLayer(ss, "Name", "input", "Normalization", "rescale-
 kernelLayer    = CustomAmplitudeKernelLayer("kernel", kernel);
 positiveLayer  = CustomPositiveLayer('positive');
 
-% normal ReLU layer, commonly used
+% normal ReLU layer, commonly used. note that since the device is
+% configured to be positive only, this is akin to a linear layer as it is
+% just y=x, or a slope m=1
 DUT            = reluLayer('Name', 'dut');
 
 % Layer under test
@@ -81,9 +83,9 @@ lgraph = connectLayers(lgraph, 'dut', 'flatten');
 lgraph = connectLayers(lgraph, 'flatten', 'softmax');
 lgraph = connectLayers(lgraph, 'softmax', 'classification');
 
-%figure;
-%F=detector_plate(ss(1), ss(2), nxx, nxx, rxx1, rxx2, lval);
-%imagesc(F);
+figure;
+F=detector_plate(ss(1), ss(2), nxx, nxx, rxx1, rxx2, lval);
+imagesc(F);
 
 options = trainingOptions('adam',...
     InitialLearnRate=learnRate,...
@@ -103,3 +105,8 @@ YValidation = dataTest.Labels;
 
 accuracy = sum(YPred == YValidation)/numel(YValidation)
 
+kut = net.Layers(2);
+
+figure;
+imagesc(kut.W);
+colorbar();
