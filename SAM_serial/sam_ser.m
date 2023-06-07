@@ -53,7 +53,7 @@ DUT            = reluLayer('Name', 'dut');
 %DUT            = CustomPolynomialNonLinearLayer('dut', P0, D0, ss, xnormal, ynormal);
 
 
-flatten        = CustomFlattenLayer(1, 'flatten', ss(1), ss(2), nxx, nxx, rxx1, rxx2, lval);
+6758=-flatten        = CustomFlattenLayer(1, 'flatten', ss(1), ss(2), nxx, nxx, rxx1, rxx2, lval);
 softmax        = softmaxLayer("Name", 'softmax');
 classification = classificationLayer("Name", 'classification');
 
